@@ -5,7 +5,7 @@ CLI Usage:
 ---
 
 ```
-cbswagger <apikey> swagger.json
+cbswagger <apikey> <output filename>
 
 ```
 
