@@ -5,6 +5,8 @@ CLI Usage:
 ---
 
 ```
+npm install -g communibase-swagger
+
 cbswagger <apikey> <output filename>
 
 ```
