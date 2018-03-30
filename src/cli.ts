@@ -19,9 +19,7 @@ function getSwaggerProperty(attribute) {
         case 'Array':
             return {
                 type: 'array',
-                items: {
-                    "$ref": `#/definitions/${attribute.items}`
-                }
+                items: getSwaggerProperty({ type: attribute.items }),
             };
 
         case 'Date':
@@ -58,7 +56,13 @@ function getSwaggerProperty(attribute) {
                 enum: ((attribute.allowableValues && attribute.allowableValues.values
                         && attribute.allowableValues.values.length)
                     ? attribute.allowableValues.values
-                    : null)
+                    : undefined)
+            };
+
+        case 'Mixed':
+            return {
+                type: 'object',
+                additionalProperties: true
             };
 
         default:
