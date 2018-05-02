@@ -7,10 +7,7 @@ if (!process.argv[2]) {
     console.log('Missing Communibase key');
     process.exit(1);
 }
-if (!process.argv[3]) {
-    console.log('Missing output file name');
-    process.exit(1);
-}
+var outputFileName = process.argv[3] || 'swagger.json';
 var cbc = new communibase_connector_js_1.Connector(process.argv[2]);
 function getSwaggerProperty(attribute) {
     switch (attribute.type) {
@@ -27,7 +24,8 @@ function getSwaggerProperty(attribute) {
         case 'ObjectId':
             return {
                 type: 'string',
-                minLength: 24
+                minLength: 24,
+                maxLength: 24
             };
         case 'int':
             return {
@@ -67,7 +65,13 @@ cbc.getAll('EntityType').then(function (entityTypes) {
     entityTypes.forEach(function (entityType) {
         definitions[entityType.title] = {
             type: 'object',
-            properties: {},
+            properties: {
+                _id: {
+                    type: 'string',
+                    minLength: 24,
+                    maxLength: 24
+                }
+            },
             required: []
         };
         entityType.attributes.map(function (attribute) {
@@ -122,7 +126,7 @@ cbc.getAll('EntityType').then(function (entityTypes) {
         },
         definitions: definitions
     };
-    var path = path_1.resolve(process.argv[3]);
+    var path = path_1.resolve(outputFileName);
     fs_1.writeFileSync(path, JSON.stringify(swagger, null, '\t'), { encoding: 'utf8', flag: 'w' });
     console.log("Created " + path);
 }).catch(function (err) {

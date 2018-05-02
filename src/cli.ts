@@ -7,10 +7,8 @@ if (!process.argv[2]) {
     process.exit(1);
 }
 
-if (!process.argv[3]) {
-    console.log('Missing output file name');
-    process.exit(1);
-}
+
+const outputFileName = process.argv[3] || 'swagger.json';
 
 const cbc = new Connector(process.argv[2]);
 
@@ -31,7 +29,8 @@ function getSwaggerProperty(attribute) {
         case 'ObjectId':
             return {
                 type: 'string',
-                minLength: 24
+                minLength: 24,
+                maxLength: 24
             };
 
         case 'int':
@@ -78,7 +77,13 @@ cbc.getAll('EntityType').then(entityTypes => {
     entityTypes.forEach(entityType => {
         definitions[entityType.title] = {
             type: 'object',
-            properties: {},
+            properties: {
+                _id: {
+                    type: 'string',
+                    minLength: 24,
+                    maxLength: 24
+                }
+            },
             required: []
         };
         entityType.attributes.map(attribute => {
@@ -135,7 +140,7 @@ cbc.getAll('EntityType').then(entityTypes => {
         definitions
     };
 
-    const path = resolve(process.argv[3]);
+    const path = resolve(outputFileName);
     writeFileSync(path, JSON.stringify(swagger, null, '\t'),{encoding:'utf8', flag:'w'});
     console.log(`Created ${path}`);
 }).catch(err => {
