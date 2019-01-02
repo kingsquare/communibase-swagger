@@ -1,8 +1,7 @@
 {
   "name": "communibase-swagger",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "",
-  "main": "index.js",
   "scripts": {
     "prepublishOnly": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -13,7 +12,7 @@
     "communibase-connector-js": "^1.0.5"
   },
   "bin": {
-    "cbswagger": "node ./bin/cbswagger.js"
+    "cbswagger": "./bin/cbswagger"
   },
   "devDependencies": {
     "prettier": "^1.15.3",
