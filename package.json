@@ -1,9 +1,10 @@
 {
   "name": "communibase-swagger",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "",
   "main": "index.js",
   "scripts": {
+    "prepublishOnly": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -12,6 +13,12 @@
     "communibase-connector-js": "^1.0.5"
   },
   "bin": {
-    "cbswagger": "./bin/cbswagger"
+    "cbswagger": "./bin/cbswagger.js"
+  },
+  "devDependencies": {
+    "prettier": "^1.15.3",
+    "tslint": "^5.12.0",
+    "tslint-config-kingsquare": "^5.0.1",
+    "typescript": "^3.2.2"
   }
 }

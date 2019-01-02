@@ -1,0 +1,6 @@
+{
+  "extends": "tslint-config-kingsquare",
+  "rules": {
+    "no-console": [false]
+  }
+}
