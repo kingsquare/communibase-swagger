@@ -1,6 +1,6 @@
 {
   "name": "communibase-swagger",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,7 @@
     "communibase-connector-js": "^1.0.5"
   },
   "bin": {
-    "cbswagger": "./bin/cbswagger.js"
+    "cbswagger": "node ./bin/cbswagger.js"
   },
   "devDependencies": {
     "prettier": "^1.15.3",
