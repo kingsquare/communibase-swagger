@@ -101,19 +101,28 @@ export default async ({
   }
   const entityTypes = await cbc.getAll<ICbEntity>("EntityType");
 
-  const definitions: { [title: string]: Schema } = {};
+  const idDefinition: Schema = {
+    type: "string",
+    minLength: 24,
+    maxLength: 24
+  };
+
+  const definitions: { [title: string]: Schema } = {
+    // TODO full EntityType definition
+    EntityType: {
+      type: "object",
+      properties: {
+        _id: idDefinition
+      }
+    }
+  };
 
   entityTypes.forEach(entityType => {
     const definition: Schema = {
       type: "object",
       properties: {
-        _id: {
-          type: "string",
-          minLength: 24,
-          maxLength: 24
-        }
-      },
-      required: []
+        _id: idDefinition
+      }
     };
     definition.properties = definition.properties || {};
 
@@ -143,15 +152,17 @@ export default async ({
   return {
     swagger: "2.0",
     info: {
-      version: "0.0.1",
-      title: "CB API",
-      description: "A RESTful API for Communibase"
+      version: "1.0.0",
+      title: "Communibase API for X",
+      description: "A RESTful API for Communibase administration X"
     },
     host: "api.communibase.nl",
     basePath: "/v1",
     tags: [],
     schemes: ["https"],
     produces: ["application/json"],
+
+    // TODO full Paths definition
     paths: {
       "/EntityType.json/crud": {
         get: {
