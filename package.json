@@ -1,21 +1,27 @@
 {
   "name": "communibase-swagger",
-  "version": "0.0.5",
-  "description": "",
+  "version": "0.1.0",
+  "description": "Generate Swagger compatible definitions for Communibase API",
+  "repository": "https://github.com/kingsquare/communibase-swagger.git",
+  "author": "Kingsquare BV <source@kingsquare.nl>",
+  "license": "ISC",
   "main": "index.js",
   "scripts": {
     "prepublishOnly": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "bin": {
+    "cbswagger": "./dist/cli.js"
+  },
+  "files": [
+    "README.md",
+    "dist/**/*"
+  ],
   "dependencies": {
     "communibase-connector-js": "^1.0.5"
   },
-  "bin": {
-    "cbswagger": "./bin/cbswagger.js"
-  },
   "devDependencies": {
+    "bluebird": "^3.7.0",
     "prettier": "^1.15.3",
     "tslint": "^5.12.0",
     "tslint-config-kingsquare": "^5.0.1",

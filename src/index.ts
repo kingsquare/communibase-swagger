@@ -1,15 +1,5 @@
+import * as Promise from "bluebird";
 import { Connector } from "communibase-connector-js";
-import { writeFileSync } from "fs";
-import { resolve } from "path";
-
-if (!process.argv[2]) {
-  throw new Error("Missing Communibase key");
-  process.exit(1);
-}
-
-const outputFileName = process.argv[3] || "swagger.json";
-
-const cbc = new Connector(process.argv[2]);
 
 interface ICbEntity {
   title: string;
@@ -111,9 +101,20 @@ function getSwaggerProperty(attribute: ICbAttribute): ISwaggerProperty {
   }
 }
 
-cbc
-  .getAll<ICbEntity>("EntityType")
-  .then(entityTypes => {
+interface IOptions {
+  apiKey: string;
+  serviceUrl?: string;
+}
+
+export default ({ apiKey, serviceUrl }: IOptions): Promise<object> => {
+  if (!apiKey) {
+    throw new Error("Missing Communibase key");
+  }
+  const cbc = new Connector(apiKey);
+  if (serviceUrl) {
+    cbc.setServiceUrl(serviceUrl);
+  }
+  return cbc.getAll<ICbEntity>("EntityType").then(entityTypes => {
     const definitions: { [title: string]: ISwaggerDefinition } = {};
     entityTypes.forEach(entityType => {
       const definition: ISwaggerDefinition = {
@@ -149,8 +150,7 @@ cbc
         definition.required = undefined;
       }
     });
-
-    const swagger = {
+    return {
       swagger: "2.0",
       info: {
         version: "0.0.1",
@@ -188,15 +188,5 @@ cbc
       },
       definitions
     };
-
-    const path = resolve(outputFileName);
-    writeFileSync(path, JSON.stringify(swagger, null, "\t"), {
-      encoding: "utf8",
-      flag: "w"
-    });
-    console.log(`Created ${path}`);
-  })
-  .catch(err => {
-    console.log(err);
-    process.exit(1);
   });
+};
