@@ -1,5 +1,5 @@
-import * as Promise from "bluebird";
 import { Connector } from "communibase-connector-js";
+import { Schema, Spec } from "swagger-schema-official";
 
 interface ICbEntity {
   title: string;
@@ -18,26 +18,7 @@ interface ICbAttribute {
   isRequired?: boolean;
 }
 
-interface ISwaggerDefinition {
-  type: string;
-  properties: {
-    [property: string]: ISwaggerProperty;
-  };
-  required?: string[];
-}
-
-interface ISwaggerProperty {
-  type?: string;
-  items?: ISwaggerProperty;
-  format?: string;
-  minLength?: number;
-  maxLength?: number;
-  enum?: any[];
-  additionalProperties?: boolean;
-  $ref?: string;
-}
-
-function getSwaggerProperty(attribute: ICbAttribute): ISwaggerProperty {
+function getSwaggerProperty(attribute: ICbAttribute): Schema {
   switch (attribute.type) {
     case "Array":
       return {
@@ -74,7 +55,7 @@ function getSwaggerProperty(attribute: ICbAttribute): ISwaggerProperty {
     case "array":
     case "boolean":
     case "integer":
-    case "null":
+    // case "null":
     case "number":
     case "object":
     case "string":
@@ -91,6 +72,7 @@ function getSwaggerProperty(attribute: ICbAttribute): ISwaggerProperty {
     case "Mixed":
       return {
         type: "object",
+        // @ts-ignore
         additionalProperties: true
       };
 
@@ -101,92 +83,99 @@ function getSwaggerProperty(attribute: ICbAttribute): ISwaggerProperty {
   }
 }
 
-interface IOptions {
+export interface ICBSwaggerGeneratorOptions {
   apiKey: string;
   serviceUrl?: string;
 }
 
-export default ({ apiKey, serviceUrl }: IOptions): Promise<object> => {
+export default async ({
+  apiKey,
+  serviceUrl
+}: ICBSwaggerGeneratorOptions): Promise<Spec> => {
   if (!apiKey) {
-    throw new Error("Missing Communibase key");
+    throw new Error("Missing Communibase API key");
   }
   const cbc = new Connector(apiKey);
   if (serviceUrl) {
     cbc.setServiceUrl(serviceUrl);
   }
-  return cbc.getAll<ICbEntity>("EntityType").then(entityTypes => {
-    const definitions: { [title: string]: ISwaggerDefinition } = {};
-    entityTypes.forEach(entityType => {
-      const definition: ISwaggerDefinition = {
-        type: "object",
-        properties: {
-          _id: {
-            type: "string",
-            minLength: 24,
-            maxLength: 24
-          }
-        },
-        required: []
-      };
+  const entityTypes = await cbc.getAll<ICbEntity>("EntityType");
 
-      if (entityType.isResource) {
-        definition.properties.updatedAt = {
+  const definitions: { [title: string]: Schema } = {};
+
+  entityTypes.forEach(entityType => {
+    const definition: Schema = {
+      type: "object",
+      properties: {
+        _id: {
           type: "string",
-          format: "date-time"
-        };
-        definition.properties.updatedBy = {
-          type: "string"
-        };
-      }
-
-      definitions[entityType.title] = definition;
-      entityType.attributes.map(attribute => {
-        definition.properties[attribute.title] = getSwaggerProperty(attribute);
-        if (attribute.isRequired && definition.required) {
-          definition.required.push(attribute.title);
+          minLength: 24,
+          maxLength: 24
         }
-      });
-      if (definition.required && !definition.required.length) {
-        definition.required = undefined;
+      },
+      required: []
+    };
+    definition.properties = definition.properties || {};
+
+    if (entityType.isResource) {
+      definition.properties.updatedAt = {
+        type: "string",
+        format: "date-time"
+      };
+      definition.properties.updatedBy = {
+        type: "string"
+      };
+    }
+
+    definitions[entityType.title] = definition;
+    entityType.attributes.map(attribute => {
+      definition.properties = definition.properties || {};
+      definition.properties[attribute.title] = getSwaggerProperty(attribute);
+      if (attribute.isRequired && definition.required) {
+        definition.required.push(attribute.title);
       }
     });
-    return {
-      swagger: "2.0",
-      info: {
-        version: "0.0.1",
-        title: "CB API",
-        description: "A RESTful API for Communibase"
-      },
-      host: "api.communibase.nl",
-      basePath: "/v1",
-      tags: [],
-      schemes: ["https"],
-      produces: ["application/json"],
-      paths: {
-        "/EntityType.json/crud": {
-          get: {
-            description: "Get all Entity types",
-            parameters: [
-              {
-                name: "token",
-                in: "query",
-                type: "string",
-                description: "A token as retrieved via /auth/login",
-                required: true
-              }
-            ],
-            responses: {
-              "200": {
-                description: "OK",
-                schema: {
-                  $ref: "#/definitions/EntityType"
-                }
+    if (definition.required && !definition.required.length) {
+      definition.required = undefined;
+    }
+  });
+
+  return {
+    swagger: "2.0",
+    info: {
+      version: "0.0.1",
+      title: "CB API",
+      description: "A RESTful API for Communibase"
+    },
+    host: "api.communibase.nl",
+    basePath: "/v1",
+    tags: [],
+    schemes: ["https"],
+    produces: ["application/json"],
+    paths: {
+      "/EntityType.json/crud": {
+        get: {
+          description: "Get all Entity types",
+          parameters: [
+            {
+              name: "token",
+              in: "query",
+              type: "string",
+              description: "A token as retrieved via /auth/login",
+              required: true
+            }
+          ],
+          responses: {
+            "200": {
+              description: "OK",
+              schema: {
+                $ref: "#/definitions/EntityType"
               }
             }
           }
         }
-      },
-      definitions
-    };
-  });
+      }
+    },
+    definitions
+  };
 };
