@@ -48,7 +48,7 @@ export default async ({
   return {
     swagger: "2.0",
     info: {
-      version: (url.pathname as string).replace(/\//, ""),
+      version: (url.pathname as string).replace(/\//g, ""),
       title: "Communibase API for X",
       description: "A RESTful API for Communibase administration X"
     },
