@@ -8,8 +8,13 @@ interface ICbEntity {
   isResource: boolean;
 }
 
+interface ICbAttributeAllowableValues {
+  valueType: string;
+  values?: string[]
+}
+
 interface ICbAttribute {
-  allowableValues?: string[];
+  allowableValues?: ICbAttributeAllowableValues;
   type: string;
   items?: string;
   minLength?: number;
@@ -19,6 +24,11 @@ interface ICbAttribute {
 }
 
 function getSwaggerProperty(attribute: ICbAttribute): Schema {
+  if ( attribute.allowableValues &&
+      attribute.allowableValues.values &&
+      attribute.allowableValues.values.length) {
+    console.log(attribute);
+  }
   switch (attribute.type) {
     case "Array":
       return {
@@ -63,6 +73,8 @@ function getSwaggerProperty(attribute: ICbAttribute): Schema {
         type: attribute.type,
         enum:
           attribute.allowableValues &&
+          attribute.allowableValues.valueType &&
+          attribute.allowableValues.valueType === 'List' &&
           attribute.allowableValues.values &&
           attribute.allowableValues.values.length
             ? (attribute.allowableValues.values as any)
