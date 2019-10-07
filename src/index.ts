@@ -107,11 +107,12 @@ function getSwaggerProperty(attribute: ICbAttribute): Schema {
           attribute.allowableValues &&
           attribute.allowableValues.valueType === "RegExp" &&
           attribute.allowableValues.match
-            ? attribute.allowableValues.match
+            ? attribute.allowableValues.match.replace(/^\/(.*?)\/([gism]+)?$/, '$1')
             : undefined
       };
 
     case "Mixed":
+      // TODO should be oneOf ?
       return {
         type: "object",
         title: attribute.title,
