@@ -187,7 +187,7 @@ export default async ({
         format: "date-time"
       };
       definition.properties.updatedBy = {
-        $ref: "#/definitions/ObjectId"
+        type: "string"
       };
     }
 
