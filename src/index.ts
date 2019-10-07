@@ -9,24 +9,31 @@ interface ICbEntity {
 }
 
 interface ICbAttributeAllowableValues {
-  valueType: string;
-  values?: string[]
+  // TODO all types
+  valueType: "List" | "RegExp" | "Range";
+  match?: string;
+  values: any[];
+  min: number;
+  max: number;
 }
 
 interface ICbAttribute {
   allowableValues?: ICbAttributeAllowableValues;
+  defaultValue?: any;
   type: string;
   items?: string;
   minLength?: number;
   maxLength?: number;
   title: string;
   isRequired?: boolean;
+  isCore?: boolean;
 }
 
 function getSwaggerProperty(attribute: ICbAttribute): Schema {
-  if ( attribute.allowableValues &&
-      attribute.allowableValues.values &&
-      attribute.allowableValues.values.length) {
+  if (
+    attribute.allowableValues &&
+    attribute.allowableValues.valueType === "Range"
+  ) {
     console.log(attribute);
   }
   switch (attribute.type) {
@@ -53,19 +60,29 @@ function getSwaggerProperty(attribute: ICbAttribute): Schema {
       };
 
     case "int":
-      return {
-        type: "integer"
-      };
-
     case "float":
       return {
-        type: "number"
+        type: attribute.type === "int" ? "integer" : "number",
+        minimum:
+          attribute.allowableValues &&
+          attribute.allowableValues.valueType === "Range"
+            ? attribute.allowableValues.min
+            : undefined,
+        maximum:
+          attribute.allowableValues &&
+          attribute.allowableValues.valueType === "Range"
+            ? attribute.allowableValues.max
+            : undefined,
+        default:
+          attribute.defaultValue !== "undefined"
+            ? attribute.defaultValue
+            : undefined
       };
 
     case "array":
     case "boolean":
     case "integer":
-    // case "null":
+    // case "null": // this type breaks the spec
     case "number":
     case "object":
     case "string":
@@ -74,10 +91,16 @@ function getSwaggerProperty(attribute: ICbAttribute): Schema {
         enum:
           attribute.allowableValues &&
           attribute.allowableValues.valueType &&
-          attribute.allowableValues.valueType === 'List' &&
+          attribute.allowableValues.valueType === "List" &&
           attribute.allowableValues.values &&
           attribute.allowableValues.values.length
             ? (attribute.allowableValues.values as any)
+            : undefined,
+        pattern:
+          attribute.allowableValues &&
+          attribute.allowableValues.valueType === "RegExp" &&
+          attribute.allowableValues.match
+            ? attribute.allowableValues.match
             : undefined
       };
 
