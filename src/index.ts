@@ -134,7 +134,8 @@ export default async ({
       type: "object",
       properties: {
         _id: idDefinition
-      }
+      },
+      required: []
     };
     definition.properties = definition.properties || {};
 
