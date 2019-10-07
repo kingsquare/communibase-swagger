@@ -32,13 +32,12 @@ interface ICbAttribute {
 }
 
 function getSwaggerProperty(attribute: ICbAttribute): Schema {
-  if (
-    attribute.allowableValues &&
-    attribute.allowableValues.valueType === "Range"
-  ) {
-    console.log(attribute);
-  }
   switch (attribute.type) {
+    case "ObjectId":
+      return {
+        "$ref": "#/definitions/ObjectId"
+      };
+
     case "Array":
       return {
         type: "array",
@@ -54,14 +53,6 @@ function getSwaggerProperty(attribute: ICbAttribute): Schema {
         type: "string",
         description: attribute.description,
         format: "date-time"
-      };
-
-    case "ObjectId":
-      return {
-        type: "string",
-        description: attribute.description,
-        minLength: 24,
-        maxLength: 24
       };
 
     case "int":
@@ -146,18 +137,19 @@ export default async ({
   }
   const entityTypes = await cbc.getAll<ICbEntity>("EntityType");
 
-  const idDefinition: Schema = {
-    type: "string",
-    minLength: 24,
-    maxLength: 24
-  };
-
   const definitions: { [title: string]: Schema } = {
+    ObjectId: {
+      type: "string",
+      minLength: 24,
+      maxLength: 24
+    },
     // TODO full EntityType definition
     EntityType: {
       type: "object",
       properties: {
-        _id: idDefinition
+        _id: {
+          "$ref": "#/definitions/ObjectId"
+        }
       }
     }
   };
@@ -167,7 +159,9 @@ export default async ({
       type: "object",
       description: entityType.description,
       properties: {
-        _id: idDefinition
+        _id: {
+          "$ref": "#/definitions/ObjectId"
+        }
       },
       required: []
     };
@@ -178,7 +172,9 @@ export default async ({
         type: "string",
         format: "date-time"
       };
-      definition.properties.updatedBy = idDefinition;
+      definition.properties.updatedBy = {
+        "$ref": "#/definitions/ObjectId"
+      };
     }
 
     definitions[entityType.title] = definition;
