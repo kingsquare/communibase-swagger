@@ -1,5 +1,6 @@
 import { Connector } from "communibase-connector-js";
 import { Schema, Spec } from "swagger-schema-official";
+import { parse } from "url";
 
 interface ICbEntity {
   type: "object";
@@ -203,6 +204,8 @@ export default async ({
     }
   });
 
+  const url = parse(serviceUrl || "https://api.communibase.nl/1.0");
+
   return {
     swagger: "2.0",
     info: {
@@ -210,10 +213,10 @@ export default async ({
       title: "Communibase API for X",
       description: "A RESTful API for Communibase administration X"
     },
-    host: "api.communibase.nl",
-    basePath: "/v1",
+    host: url.host,
+    basePath: url.pathname,
     tags: [],
-    schemes: ["https"],
+    schemes: [(url.protocol as string).replace(":", "")],
     produces: ["application/json"],
 
     // TODO full Paths definition
