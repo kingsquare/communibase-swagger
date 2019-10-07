@@ -50,13 +50,13 @@ function getSwaggerProperty(attribute: ICbAttribute): Schema {
       };
 
     case "Date":
-        // CB datetime or date are always date-time
+      // CB datetime or date are always date-time
       return {
         type: "string",
         description: attribute.description,
         format: "date-time",
         default:
-          attribute.defaultValue !== "undefined"
+          attribute.defaultValue || attribute.defaultValue === 0
             ? attribute.defaultValue
             : undefined
       };
@@ -77,7 +77,7 @@ function getSwaggerProperty(attribute: ICbAttribute): Schema {
             ? attribute.allowableValues.max
             : undefined,
         default:
-          attribute.defaultValue !== "undefined"
+          attribute.defaultValue || attribute.defaultValue === 0
             ? attribute.defaultValue
             : undefined
       };
@@ -110,7 +110,7 @@ function getSwaggerProperty(attribute: ICbAttribute): Schema {
               )
             : undefined,
         default:
-          attribute.defaultValue !== "undefined"
+          attribute.defaultValue || attribute.defaultValue === 0
             ? attribute.defaultValue
             : undefined
       };
