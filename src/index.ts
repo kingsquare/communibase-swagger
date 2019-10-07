@@ -2,8 +2,9 @@ import { Connector } from "communibase-connector-js";
 import { Schema, Spec } from "swagger-schema-official";
 
 interface ICbEntity {
-  title: string;
   type: "object";
+  title: string;
+  description?: string;
   attributes: ICbAttribute[];
   isResource: boolean;
 }
@@ -25,6 +26,7 @@ interface ICbAttribute {
   minLength?: number;
   maxLength?: number;
   title: string;
+  description?: string;
   isRequired?: boolean;
   isCore?: boolean;
 }
@@ -40,6 +42,7 @@ function getSwaggerProperty(attribute: ICbAttribute): Schema {
     case "Array":
       return {
         type: "array",
+        description: attribute.description,
         items: getSwaggerProperty({
           type: attribute.items as string,
           title: ""
@@ -49,12 +52,14 @@ function getSwaggerProperty(attribute: ICbAttribute): Schema {
     case "Date":
       return {
         type: "string",
+        description: attribute.description,
         format: "date-time"
       };
 
     case "ObjectId":
       return {
         type: "string",
+        description: attribute.description,
         minLength: 24,
         maxLength: 24
       };
@@ -63,6 +68,7 @@ function getSwaggerProperty(attribute: ICbAttribute): Schema {
     case "float":
       return {
         type: attribute.type === "int" ? "integer" : "number",
+        description: attribute.description,
         minimum:
           attribute.allowableValues &&
           attribute.allowableValues.valueType === "Range"
@@ -88,6 +94,7 @@ function getSwaggerProperty(attribute: ICbAttribute): Schema {
     case "string":
       return {
         type: attribute.type,
+        description: attribute.description,
         enum:
           attribute.allowableValues &&
           attribute.allowableValues.valueType &&
@@ -107,6 +114,8 @@ function getSwaggerProperty(attribute: ICbAttribute): Schema {
     case "Mixed":
       return {
         type: "object",
+        title: attribute.title,
+        description: attribute.description,
         // @ts-ignore
         additionalProperties: true
       };
@@ -155,6 +164,7 @@ export default async ({
   entityTypes.forEach(entityType => {
     const definition: Schema = {
       type: "object",
+      description: entityType.description,
       properties: {
         _id: idDefinition
       },
