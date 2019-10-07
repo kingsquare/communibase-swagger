@@ -144,9 +144,7 @@ export default async ({
         type: "string",
         format: "date-time"
       };
-      definition.properties.updatedBy = {
-        type: "string"
-      };
+      definition.properties.updatedBy = idDefinition;
     }
 
     definitions[entityType.title] = definition;
