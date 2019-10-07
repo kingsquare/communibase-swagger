@@ -26,6 +26,7 @@ interface ICbAttribute {
   minLength?: number;
   maxLength?: number;
   title: string;
+  renderHint?: string;
   description?: string;
   isRequired?: boolean;
   isCore?: boolean;
@@ -35,7 +36,7 @@ function getSwaggerProperty(attribute: ICbAttribute): Schema {
   switch (attribute.type) {
     case "ObjectId":
       return {
-        "$ref": "#/definitions/ObjectId"
+        $ref: "#/definitions/ObjectId"
       };
 
     case "Array":
@@ -49,10 +50,15 @@ function getSwaggerProperty(attribute: ICbAttribute): Schema {
       };
 
     case "Date":
+        // CB datetime or date are always date-time
       return {
         type: "string",
         description: attribute.description,
-        format: "date-time"
+        format: "date-time",
+        default:
+          attribute.defaultValue !== "undefined"
+            ? attribute.defaultValue
+            : undefined
       };
 
     case "int":
@@ -98,7 +104,14 @@ function getSwaggerProperty(attribute: ICbAttribute): Schema {
           attribute.allowableValues &&
           attribute.allowableValues.valueType === "RegExp" &&
           attribute.allowableValues.match
-            ? attribute.allowableValues.match.replace(/^\/(.*?)\/([gism]+)?$/, '$1')
+            ? attribute.allowableValues.match.replace(
+                /^\/(.*?)\/([gism]+)?$/,
+                "$1"
+              )
+            : undefined,
+        default:
+          attribute.defaultValue !== "undefined"
+            ? attribute.defaultValue
             : undefined
       };
 
@@ -148,7 +161,7 @@ export default async ({
       type: "object",
       properties: {
         _id: {
-          "$ref": "#/definitions/ObjectId"
+          $ref: "#/definitions/ObjectId"
         }
       }
     }
@@ -160,7 +173,7 @@ export default async ({
       description: entityType.description,
       properties: {
         _id: {
-          "$ref": "#/definitions/ObjectId"
+          $ref: "#/definitions/ObjectId"
         }
       },
       required: []
@@ -173,7 +186,7 @@ export default async ({
         format: "date-time"
       };
       definition.properties.updatedBy = {
-        "$ref": "#/definitions/ObjectId"
+        $ref: "#/definitions/ObjectId"
       };
     }
 
