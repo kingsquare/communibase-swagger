@@ -1,137 +1,7 @@
 import { Connector } from "communibase-connector-js";
 import { Schema, Spec } from "swagger-schema-official";
 import { parse } from "url";
-
-interface ICbEntity {
-  type: "object";
-  title: string;
-  description?: string;
-  attributes: ICbAttribute[];
-  isResource: boolean;
-}
-
-interface ICbAttributeAllowableValues {
-  // TODO all types
-  valueType: "List" | "RegExp" | "Range";
-  match?: string;
-  values: any[];
-  min: number;
-  max: number;
-}
-
-interface ICbAttribute {
-  allowableValues?: ICbAttributeAllowableValues;
-  defaultValue?: any;
-  type: string;
-  items?: string;
-  minLength?: number;
-  maxLength?: number;
-  title: string;
-  renderHint?: string;
-  description?: string;
-  isRequired?: boolean;
-  isCore?: boolean;
-}
-
-function getSwaggerProperty(attribute: ICbAttribute): Schema {
-  switch (attribute.type) {
-    case "ObjectId":
-      return {
-        $ref: "#/definitions/ObjectId"
-      };
-
-    case "Array":
-      return {
-        type: "array",
-        description: attribute.description,
-        items: getSwaggerProperty({
-          type: attribute.items as string,
-          title: ""
-        })
-      };
-
-    case "Date":
-      // CB datetime or date are always date-time
-      return {
-        type: "string",
-        description: attribute.description,
-        format: "date-time",
-        default:
-          attribute.defaultValue || attribute.defaultValue === 0
-            ? attribute.defaultValue
-            : undefined
-      };
-
-    case "int":
-    case "float":
-      return {
-        type: attribute.type === "int" ? "integer" : "number",
-        description: attribute.description,
-        minimum:
-          attribute.allowableValues &&
-          attribute.allowableValues.valueType === "Range"
-            ? attribute.allowableValues.min
-            : undefined,
-        maximum:
-          attribute.allowableValues &&
-          attribute.allowableValues.valueType === "Range"
-            ? attribute.allowableValues.max
-            : undefined,
-        default:
-          attribute.defaultValue || attribute.defaultValue === 0
-            ? attribute.defaultValue
-            : undefined
-      };
-
-    case "array":
-    case "boolean":
-    case "integer":
-    // case "null": // this type breaks the spec
-    case "number":
-    case "object":
-    case "string":
-      return {
-        type: attribute.type,
-        description: attribute.description,
-        enum:
-          attribute.allowableValues &&
-          attribute.allowableValues.valueType &&
-          attribute.allowableValues.valueType === "List" &&
-          attribute.allowableValues.values &&
-          attribute.allowableValues.values.length
-            ? (attribute.allowableValues.values as any)
-            : undefined,
-        pattern:
-          attribute.allowableValues &&
-          attribute.allowableValues.valueType === "RegExp" &&
-          attribute.allowableValues.match
-            ? attribute.allowableValues.match.replace(
-                /^\/(.*?)\/([gism]+)?$/,
-                "$1"
-              )
-            : undefined,
-        default:
-          attribute.defaultValue || attribute.defaultValue === 0
-            ? attribute.defaultValue
-            : undefined
-      };
-
-    case "Mixed":
-      // TODO should be oneOf ?
-      return {
-        type: "object",
-        title: attribute.title,
-        description: attribute.description,
-        // @ts-ignore
-        additionalProperties: true
-      };
-
-    default:
-      return {
-        $ref: `#/definitions/${attribute.type}`
-      };
-  }
-}
+import { ICbEntity, parseEntityType } from "./parser";
 
 export interface ICBSwaggerGeneratorOptions {
   apiKey: string;
@@ -169,47 +39,16 @@ export default async ({
   };
 
   entityTypes.forEach(entityType => {
-    const definition: Schema = {
-      type: "object",
-      description: entityType.description,
-      properties: {
-        _id: {
-          $ref: "#/definitions/ObjectId"
-        }
-      },
-      required: []
-    };
-    definition.properties = definition.properties || {};
-
-    if (entityType.isResource) {
-      definition.properties.updatedAt = {
-        type: "string",
-        format: "date-time"
-      };
-      definition.properties.updatedBy = {
-        type: "string"
-      };
-    }
-
-    definitions[entityType.title] = definition;
-    entityType.attributes.map(attribute => {
-      definition.properties = definition.properties || {};
-      definition.properties[attribute.title] = getSwaggerProperty(attribute);
-      if (attribute.isRequired && definition.required) {
-        definition.required.push(attribute.title);
-      }
-    });
-    if (definition.required && !definition.required.length) {
-      definition.required = undefined;
-    }
+    definitions[entityType.title] = parseEntityType(entityType);
   });
 
-  const url = parse(serviceUrl || "https://api.communibase.nl/1.0");
+  // TODO get from Connector.getServiceUrl ? (though needs to be exposed)
+  const url = parse(serviceUrl || "https://api.communibase.nl/0.1/");
 
   return {
     swagger: "2.0",
     info: {
-      version: "1.0.0",
+      version: (url.protocol as string).replace("/", ""),
       title: "Communibase API for X",
       description: "A RESTful API for Communibase administration X"
     },
