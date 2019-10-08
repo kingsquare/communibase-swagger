@@ -1,0 +1,87 @@
+[
+  {
+    "title": "cb EntityType without attributes has an _id property",
+    "input": {
+      "attributes": []
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "$ref": "#/definitions/ObjectId"
+        }
+      }
+    }
+  },
+  {
+    "title": "cb EntityType with one non required attribute",
+    "input": {
+      "attributes": [
+        {
+          "type": "string",
+          "title": "test"
+        }
+      ]
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "$ref": "#/definitions/ObjectId"
+        },
+        "test": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  {
+    "title": "cb EntityType with one required attribute",
+    "input": {
+      "attributes": [
+        {
+          "type": "string",
+          "title": "test",
+          "isRequired": true
+        }
+      ]
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "$ref": "#/definitions/ObjectId"
+        },
+        "test": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "test"
+      ]
+    }
+  },
+  {
+    "title": "cb EntityType.isResource has updatedAt/updatedBy properties",
+    "input": {
+      "isResource": true,
+      "attributes": [
+      ]
+    },
+    "output": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "$ref": "#/definitions/ObjectId"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedBy": {
+          "type": "string"
+        }
+      }
+    }
+  }
+]

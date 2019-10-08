@@ -1,2 +1,6 @@
 dist/
 swagger.json
+
+# test output
+.nyc_output
+coverage

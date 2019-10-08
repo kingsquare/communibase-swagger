@@ -42,9 +42,10 @@ export function parseAttribute(attribute: ICbAttribute): Schema {
       return {
         type: "array",
         description: attribute.description,
+        // TODO make this more intuitive
         items: parseAttribute({
           type: attribute.items as string,
-          title: ""
+          title: "" // this is a hack to get a reference to the type
         })
       };
 
@@ -132,37 +133,37 @@ export function parseAttribute(attribute: ICbAttribute): Schema {
 }
 
 export const parseEntityType = (entityType: ICbEntity) => {
-    const definition: Schema = {
-        type: "object",
-        description: entityType.description,
-        properties: {
-            _id: {
-                $ref: "#/definitions/ObjectId"
-            }
-        },
-        required: []
+  const definition: Schema = {
+    type: "object",
+    description: entityType.description,
+    properties: {
+      _id: {
+        $ref: "#/definitions/ObjectId"
+      }
+    },
+    required: []
+  };
+
+  if (entityType.isResource && definition.properties) {
+    definition.properties.updatedAt = {
+      type: "string",
+      format: "date-time"
     };
-    definition.properties = definition.properties || {};
+    definition.properties.updatedBy = {
+      type: "string"
+    };
+  }
 
-    if (entityType.isResource) {
-        definition.properties.updatedAt = {
-            type: "string",
-            format: "date-time"
-        };
-        definition.properties.updatedBy = {
-            type: "string"
-        };
+  entityType.attributes.map(attribute => {
+    if (definition.properties) { // todo remove this superfluous check (only here for ts and reduces the code coverage
+      definition.properties[attribute.title] = parseAttribute(attribute);
+      if (attribute.isRequired && definition.required) {
+        definition.required.push(attribute.title);
+      }
     }
-
-    entityType.attributes.map(attribute => {
-        definition.properties = definition.properties || {};
-        definition.properties[attribute.title] = parseAttribute(attribute);
-        if (attribute.isRequired && definition.required) {
-            definition.required.push(attribute.title);
-        }
-    });
-    if (definition.required && !definition.required.length) {
-        definition.required = undefined;
-    }
-    return definition;
+  });
+  if (definition.required && !definition.required.length) {
+    definition.required = undefined;
+  }
+  return definition;
 };
