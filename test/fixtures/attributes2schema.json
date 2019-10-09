@@ -1,0 +1,308 @@
+[
+  {
+    "title": "cb ObjectId attribute is a ObjectId reference",
+    "input": {
+      "type": "ObjectId"
+    },
+    "output": { "$ref": "#/definitions/ObjectId" }
+  },
+  {
+    "title": "cb Array attribute is a array with items reference",
+    "input": {
+      "type": "Array",
+      "items": "SomeDefinition"
+    },
+    "output": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/SomeDefinition"
+      }
+    }
+  },
+  {
+    "title": "cb Array with description has a description",
+    "input": {
+      "type": "Array",
+      "items": "SomeDefinition",
+      "description": "SomeDefinition"
+    },
+    "output": {
+      "type": "array",
+      "description": "SomeDefinition",
+      "items": {
+        "$ref": "#/definitions/SomeDefinition"
+      }
+    }
+  },
+  {
+    "title": "cb Date attribute is a string with format date-time",
+    "input": {
+      "type": "Date"
+    },
+    "output": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  {
+    "title": "cb Date attribute with description has a description",
+    "input": {
+      "type": "Date",
+      "description": "date"
+    },
+    "output": {
+      "type": "string",
+      "format": "date-time",
+      "description": "date"
+    }
+  },
+  {
+    "title": "cb Date attribute with defaultValue has a default",
+    "input": {
+      "type": "Date",
+      "defaultValue": "date"
+    },
+    "output": {
+      "type": "string",
+      "format": "date-time",
+      "default": "date"
+    }
+  },
+  {
+    "title": "cb int attribute is a integer",
+    "input": {
+      "type": "int"
+    },
+    "output": {
+      "type": "integer"
+    }
+  },
+  {
+    "title": "cb int attribute with Range is a integer with minimum/maximum values",
+    "input": {
+      "type": "int",
+      "allowableValues": {
+        "valueType": "Range",
+        "min": 0,
+        "max": 1
+      }
+    },
+    "output": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 1
+    }
+  },
+  {
+    "title": "cb int attribute with defaultValue",
+    "input": {
+      "type": "int",
+      "defaultValue": 1
+    },
+    "output": {
+      "type": "integer",
+      "default": 1
+    }
+  },
+  {
+    "title": "cb float attribute is a number",
+    "input": {
+      "type": "float"
+    },
+    "output": {
+      "type": "number"
+    }
+  },
+  {
+    "title": "cb float attribute with Range is a number with minimum/maximum values",
+    "input": {
+      "type": "float",
+      "allowableValues": {
+        "valueType": "Range",
+        "min": 0,
+        "max": 1
+      }
+    },
+    "output": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    }
+  },
+  {
+    "title": "cb float attribute with defaultValue",
+    "input": {
+      "type": "float",
+      "defaultValue": 1
+    },
+    "output": {
+      "type": "number",
+      "default": 1
+    }
+  },
+  {
+    "title": "cb string attribute is a string",
+    "input": {
+      "type": "string"
+    },
+    "output": {
+      "type": "string"
+    }
+  },
+  {
+    "title": "cb string attribute with defaultValue",
+    "input": {
+      "type": "string",
+      "defaultValue": "string"
+    },
+    "output": {
+      "type": "string",
+      "default": "string"
+    }
+  },
+  {
+    "title": "cb attribute with valueType List is a enum",
+    "input": {
+      "type": "string",
+      "allowableValues": {
+        "valueType": "List",
+        "values": [
+          "value"
+        ]
+      }
+    },
+    "output": {
+      "type": "string",
+      "enum": ["value"]
+    }
+  },
+  {
+    "title": "cb string attribute with values is not an enum",
+    "input": {
+      "type": "string",
+      "allowableValues": {
+        "values": [
+          "value"
+        ]
+      }
+    },
+    "output": {
+      "type": "string"
+    }
+  },
+  {
+    "title": "cb string attribute with valueType RegExp has a pattern",
+    "input": {
+      "type": "string",
+      "allowableValues": {
+        "valueType": "RegExp",
+        "match": "/RegExp/"
+      }
+    },
+    "output": {
+      "type": "string",
+      "pattern": "RegExp"
+    }
+  },
+  {
+    "title": "cb string attribute with valueType RegExp has a pattern with ",
+    "input": {
+      "type": "string",
+      "allowableValues": {
+        "valueType": "RegExp",
+        "match": "/RegExp/i"
+      }
+    },
+    "output": {
+      "type": "string",
+      "pattern": "RegExp"
+    }
+  },
+  {
+    "title": "cb array attribute (possible breakage as it should be Array",
+    "input": {
+      "type": "array"
+    },
+    "output": {
+      "type": "array"
+    }
+  },
+  {
+    "title": "cb boolean attribute",
+    "input": {
+      "type": "boolean"
+    },
+    "output": {
+      "type": "boolean"
+    }
+  },
+  {
+    "title": "cb integer attribute",
+    "input": {
+      "type": "integer"
+    },
+    "output": {
+      "type": "integer"
+    }
+  },
+  {
+    "title": "cb number attribute",
+    "input": {
+      "type": "number"
+    },
+    "output": {
+      "type": "number"
+    }
+  },
+  {
+    "title": "cb object attribute",
+    "input": {
+      "type": "object"
+    },
+    "output": {
+      "type": "object"
+    }
+  },
+  {
+    "title": "cb object attribute with description",
+    "input": {
+      "type": "object",
+      "description": "description"
+    },
+    "output": {
+      "type": "object",
+      "description": "description"
+    }
+  },
+  {
+    "title": "cb Mixed attribute TODO this should probably be oneOf?",
+    "input": {
+      "type": "Mixed"
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  {
+    "title": "cb Mixed attribute with description TODO this should probably be oneOf?",
+    "input": {
+      "type": "Mixed",
+      "description": "Mixed"
+    },
+    "output": {
+      "type": "object",
+      "description": "Mixed",
+      "additionalProperties": true
+    }
+  },
+  {
+    "title": "cb unknown attribute TODO this should probably be an ignore?",
+    "input": {
+      "type": "SomethingElse"
+    },
+    "output": {
+      "$ref": "#/definitions/SomethingElse"
+    }
+  }
+]
