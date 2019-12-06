@@ -11,7 +11,7 @@
     "test": "nyc ava"
   },
   "bin": {
-    "cbswagger": "./dist/cli.js"
+    "cbswagger": "node ./dist/cli.js"
   },
   "files": [
     "README.md",

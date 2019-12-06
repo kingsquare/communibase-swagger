@@ -2,7 +2,7 @@
 import test, { ExecutionContext, Implementation } from "ava";
 import { parseEntityType } from "../src/parser";
 // @ts-ignore
-import { omitBy , isUndefined} from "lodash";
+import { omitBy, isUndefined } from "lodash";
 // @ts-ignore
 // tslint:disable-next-line:no-var-requires
 const fixtures = require("./fixtures/entityType2schema.json");

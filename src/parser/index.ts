@@ -155,7 +155,8 @@ export const parseEntityType = (entityType: ICbEntity) => {
   }
 
   entityType.attributes.map(attribute => {
-    if (definition.properties) { // todo remove this superfluous check (only here for ts and reduces the code coverage
+    if (definition.properties) {
+      // todo remove this superfluous check (only here for ts and reduces the code coverage
       definition.properties[attribute.title] = parseAttribute(attribute);
       if (attribute.isRequired && definition.required) {
         definition.required.push(attribute.title);
