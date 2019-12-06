@@ -1,6 +1,6 @@
 {
   "name": "communibase-swagger",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Generate Swagger compatible definitions for Communibase API",
   "repository": "https://github.com/kingsquare/communibase-swagger.git",
   "author": "Kingsquare BV <source@kingsquare.nl>",
@@ -11,7 +11,7 @@
     "test": "nyc ava"
   },
   "bin": {
-    "cbswagger": "node ./dist/cli.js"
+    "cbswagger": "dist/cli.js"
   },
   "files": [
     "README.md",
